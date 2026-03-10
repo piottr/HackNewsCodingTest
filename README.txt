@@ -7,6 +7,10 @@ ASP.NET Core API that fetches the top `n` Hacker News stories sorted by score.
 docker build -t hackernews-api -f HackerNews.API/Dockerfile .
 docker run -p 8080:8080 hackernews-api
 
+## Docker usage
+
+http://localhost:8080/swagger/index.html
+
 ## Possible Enhancements
 
 Add unit Tests
