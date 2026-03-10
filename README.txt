@@ -11,6 +11,9 @@ docker run -p 8080:8080 hackernews-api
 
 Add unit Tests
 Add Redis support for caching results and improving performance
+The concurrency limit could be configurable (e.g., via appsettings.json) to allow adjusting it depending on the environment and API limitations.
+Also SemaphoreSlim could be replaced with Parallel.ForEachAsync to simplify the code and make it more readable.
 Add logging and error handling
 Add proper HTTPS support with certificates inside the container
 Support optional filtering or maybe additional sorting criteria
+...
