@@ -1,0 +1,16 @@
+services:
+  hackernews.api:
+    image: ${DOCKER_REGISTRY-}hackernewsapi
+    build:
+      context: .
+      dockerfile: HackerNews.API/Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"

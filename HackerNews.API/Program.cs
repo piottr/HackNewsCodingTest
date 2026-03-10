@@ -6,18 +6,21 @@ using HackerNews.API.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
-builder.Services.AddMemoryCache();
-builder.Services.AddMemoryCache();
+builder.Services.Configure<HackerNewsOptions>(builder.Configuration.GetSection("HackerNews"));
+builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection("Redis"));
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetSection("Redis:Connection").Value;
+    options.InstanceName = "HackerNews_";
+});
+ 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.Configure<HackerNewsOptions>(builder.Configuration.GetSection("HackerNews"));
 
 builder.Services.AddHttpClient<IHackerNewsService, HackerNewsService>();
 builder.Services.AddScoped<IBestStoriesService, BestStoriesService>();

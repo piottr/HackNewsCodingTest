@@ -7,4 +7,7 @@
     <File Path=".dockerignore" />
     <Project Path="HackerNews.API/HackerNews.API.csproj" Id="883f6014-542b-4fe9-b1e5-0ed3bb51e030" />
   </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
 </Solution>
