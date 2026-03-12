@@ -20,5 +20,12 @@ namespace HackerNews.API.Controllers
             var result = await _service.GetBestStoriesAsync(n);
             return Ok(result);
         }
+
+        [HttpGet("cache-only")]
+        public async Task<IActionResult> GetBestStoriesFromCache([FromQuery] int n)
+        {
+            var result = await _service.GetBestStoriesAsync(n);
+            return Ok(result);
+        }
     }
 }

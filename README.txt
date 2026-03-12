@@ -2,6 +2,13 @@
 
 ASP.NET Core API that fetches the top `n` Hacker News stories sorted by score.
 
+## Infrastructure Stack
+- .NET 8 (Web API & Worker Service)
+- RabbitMQ as the message broker.
+- MassTransit as the abstraction layer for messaging.
+- Redis as a distributed cache.
+- Docker & Docker Compose for orchestration.
+
 ## Run with Docker
  
 docker compose up --build

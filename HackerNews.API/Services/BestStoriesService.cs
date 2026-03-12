@@ -1,19 +1,17 @@
-﻿using HackerNews.API.Client.Interfaces;
-using HackerNews.API.Common.Const;
-using HackerNews.API.Dto;
-using HackerNews.API.Models;
+﻿using HackerNews.API.Dto;
 using HackerNews.API.Services.Interfaces;
-using Microsoft.Extensions.Caching.Distributed;
-using System.Text.Json;
+using HackerNews.Contracts.Cache;
+using HackerNews.Application.Interfaces;
+using HackerNews.Application.Dto;
 
 namespace HackerNews.API.Services;
 
 public class BestStoriesService: IBestStoriesService
 {
     private readonly IHackerNewsService _client;
-    private readonly IDistributedCache _cache; 
+    private readonly ICacheService _cache; 
 
-    public BestStoriesService(IHackerNewsService client, IDistributedCache cache)
+    public BestStoriesService(IHackerNewsService client, ICacheService cache)
     {
         _client = client;
         _cache = cache;
@@ -45,27 +43,22 @@ public class BestStoriesService: IBestStoriesService
     {
         var cacheKey = string.Format(CacheKeys.BestStoriesPrefix, n);
 
-        await _cache.SetStringAsync(
+        await _cache.SetAsync<List<StoryDto>>(
             cacheKey,
-            JsonSerializer.Serialize(stories),
-            new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-            });
+            stories,
+            TimeSpan.FromMinutes(5)
+            );
     }
 
     private async Task<List<StoryDto>?> GetCacheStories(int n)
     {
         var cacheKey = string.Format(CacheKeys.BestStoriesPrefix, n);
-        var cached = await _cache.GetStringAsync(cacheKey);
+        var cached = await _cache.GetAsync<List<StoryDto>>(cacheKey);
 
-        if (cached != null)
-            return JsonSerializer.Deserialize<List<StoryDto>>(cached);
-
-        return null;
+        return cached;
     }
 
-    private async Task<List<HackerNewsItem>> FetchItemsWithLimitAsync(IEnumerable<int> ids, int maxConcurrency)
+    private async Task<List<HackerNewsItemDto>> FetchItemsWithLimitAsync(IEnumerable<int> ids, int maxConcurrency)
     {
         var semaphore = new SemaphoreSlim(maxConcurrency);
         var tasks = ids.Select(async id =>
@@ -84,7 +77,7 @@ public class BestStoriesService: IBestStoriesService
         return (await Task.WhenAll(tasks)).ToList();
     }
 
-    private StoryDto MapToStoryDto(HackerNewsItem item)
+    private StoryDto MapToStoryDto(HackerNewsItemDto item)
     {
         return new StoryDto
         {
