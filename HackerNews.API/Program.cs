@@ -1,29 +1,20 @@
-using HackerNews.API.Client;
-using HackerNews.API.Client.Interfaces;
-using HackerNews.API.Common.Config;
-using HackerNews.API.Services;
-using HackerNews.API.Services.Interfaces;
+using HackerNews.Infrastructure.Extensions;
+using HackerNews.Infrastructure.HackerNewsClient.Extensions;
+using HackerNews.Infrastructure.RedisCaching.Extensions;
+using HackerNews.Infrastructure.RabbitMQ.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-
-builder.Services.Configure<HackerNewsOptions>(builder.Configuration.GetSection("HackerNews"));
-builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection("Redis"));
-
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration.GetSection("Redis:Connection").Value;
-    options.InstanceName = "HackerNews_";
-});
+builder.Services
+    .AddServices(builder.Configuration)
+    .AddRedis(builder.Configuration)
+    .AddRabbitMq(builder.Configuration)
+    .AddHackerNewsClient(builder.Configuration);
  
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-builder.Services.AddHttpClient<IHackerNewsService, HackerNewsService>();
-builder.Services.AddScoped<IBestStoriesService, BestStoriesService>();
 
 var app = builder.Build();
 
